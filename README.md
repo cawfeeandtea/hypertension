@@ -2,9 +2,8 @@
 ================
 Manasa Xavier
 Jan 3 2017
-================
+
 This project looks into any correlation between cold temperature and blood pressure medication usage.
-================
 
 Data used: Medicaid State Utilization Data of 2015 https://www.healthdata.gov/dataset/state-drug-utilization-data-2015
 
