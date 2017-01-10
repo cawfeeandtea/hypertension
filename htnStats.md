@@ -155,6 +155,13 @@ I created my own list of antihypertensive drugs using Micromedex's list of gener
 
 Read in data
 
+``` r
+suppressMessages(require(xlsx))
+indicData = "bpIndic.xlsx"
+mydf <- read.xlsx(indicData,1)
+str(mydf)
+```
+
     ## 'data.frame':    268 obs. of  1 variable:
     ##  $ drug: Factor w/ 267 levels "accupril","accuretic",..: 3 10 11 14 12 15 16 13 18 19 ...
 
@@ -192,10 +199,8 @@ names(total) <- c("Quarter","BP", "nonBP", "Total")
 percentage <- round(rbind.data.frame((total$BP[1]/total$Total[1])*100, (total$BP[2]/total$Total[2])*100,(total$BP[3]/total$Total[3])*100, (total$BP[4]/total$Total[4])*100, (total$nonBP[1]/total$Total[1])*100, (total$nonBP[2]/total$Total[2])*100,(total$nonBP[3]/total$Total[3])*100, (total$nonBP[4]/total$Total[4])*100), digits = 2)
 
 #Reformat data to plot
-require(reshape)
+suppressMessages(require(reshape))
 ```
-
-    ## Loading required package: reshape
 
     ## Warning: package 'reshape' was built under R version 3.2.5
 
@@ -210,16 +215,11 @@ names(ndata) <- c("Quarter", "variable", "value", "percent")
 Bar plot showing total number of antihypertensive prescriptions per quarter. Note the quarter start dates are - Quarter 1: 1/1, Quarter 2: 4/1, Quarter 3: 7/1, Quarter 4: 10/1
 
 ``` r
-require(ggplot2)
-```
-
-    ## Loading required package: ggplot2
-
-``` r
+suppressMessages(require(ggplot2))
 ggplot(bpVals, aes(x=Quarter, y=Num.of.Prescriptions)) + geom_bar(stat="identity") + ggtitle("National Medicaid Antihypertensives Prescription Data") + labs(x="Quarter", y="Number of Prescriptions")
 ```
 
-![](htnStats_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](htnStats_files/figure-markdown_github/unnamed-chunk-8-1.png) <br> The bar plot does not show an increase in number of HTN drug prescriptions during cold weather months (Quarter 1 and Quarter 2). Next, I will look at number of antiHTN prescriptions as a percent of total prescriptions and compare over each quarter.
 
 ``` r
 myPlot <- ggplot() + geom_bar(aes(y = value, x = Quarter, fill=variable), data = ndata,
@@ -234,10 +234,10 @@ The percent of prescriptions for hypertension drugs seems to be similar among al
 
 ``` r
 #Subset of only MA state Medicaid utiliztion data for 2015
-mycmsdata <- subset(cmsdata,cmsdata$State=="NY", select = c(Product.Name, Quarter, State, Units.Reimbursed, Number.of.Prescriptions, Total.Amount.Reimbursed))
+mycmsdata <- subset(cmsdata,cmsdata$State=="MA", select = c(Product.Name, Quarter, State, Units.Reimbursed, Number.of.Prescriptions, Total.Amount.Reimbursed))
 ```
 
-I will repeat the data manipulation and visualization steps of the national data to produce plots for MA data. ![](htnStats_files/figure-markdown_github/unnamed-chunk-11-1.png)![](htnStats_files/figure-markdown_github/unnamed-chunk-11-2.png)
+<br> I will repeat the data manipulation and visualization steps of the national data to produce plots for MA data. ![](htnStats_files/figure-markdown_github/unnamed-chunk-11-1.png)![](htnStats_files/figure-markdown_github/unnamed-chunk-11-2.png)
 
 **Part 5: Discussion of Results and Further Research**
 
@@ -249,7 +249,7 @@ Improvements to and further research into this topic includes using claims data 
 
 1)Kim J, Jung K, Hong Y, et al. The Relationship between Cold Exposure and Hypertension. J Occup Health 2003; 45:300-6
 
-1.  Bergen P, Fregly MJ, Rossi F, et al. The effect of intermittent exposure to cold on the development of hypertension in the rat. Am J Hypertens 1992;5:548-55
+2)Bergen P, Fregly MJ, Rossi F, et al. The effect of intermittent exposure to cold on the development of hypertension in the rat. Am J Hypertens 1992;5:548-55
 
 3)Drugs That Treat Hypertension. In Micromedex [online database]. Greenwood Village, CO: Truven Health Analytics (accessed 2017 Jan 3)
 
