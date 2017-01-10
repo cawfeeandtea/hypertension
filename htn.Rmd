@@ -1,0 +1,83 @@
+---
+title: "Cold Weather and Antihypertensive Drug Use"
+author: "Manasa"
+date: Jan 3, 2017
+output: html_document
+---
+
+Studies have shown that cold temperature is a risk factor for hypertension. 
+
+In this project, I 
+
+Markdown see <http://rmarkdown.rstudio.com>.
+
+
+**Part 1: Obtaining Prescription Data**
+Read in Medicaid state utilization data of 2015
+```{r}
+#CMS State Utilization Data 2015
+url="https://data.medicaid.gov/api/views/ju2h-vcgs/rows.csv?accessType=DOWNLOAD"
+cmsdata <- read.csv(url) 
+#head(cmsdata)
+```
+
+**Part 2: Building a List of Drugs Indicated for Hypertension**
+
+Solution 1: Using openFDA API
+```{r}
+#Get list of drugs indicated for blood pressure from Open FDA API
+#url = 'https://api.fda.gov/drug/event.json?search=patient.drug.drugindication:hypertension&count=patient.drug.openfda.generic_name.exact&limit=100'
+#rawdata <- readLines(url, warn="F") 
+#data <- jsonlite::fromJSON(rawdata)
+#head(data)
+#results <- data$results
+#bpDrugs <- results$term
+```
+
+```{r, echo=FALSE}
+#bpDrugs
+```
+
+
+Result - openFDA was innacurate as several drugs that are not actually indicated for hypertension are were listed, so I will use different indication database
+
+
+Solution 2: Creating Antihypertensive Drug List
+
+Upload list of antihypertensive drugs using Micromedex's list of drugs that are effective in treating hypertension:
+
+```{r}
+suppressMessages(require(xlsx))
+indicData = "bpIndic.xlsx"
+mydf <- read.xlsx(indicData,1)
+str(mydf)
+
+bpDrugs <- mydf$drug
+bpDrugs
+```
+
+Clean and match formatting of list to CMS data:
+```{r}
+#convert drug names to all uppercase so it is easier to compare with CMS data
+BPdrugs <- toupper(bpDrugs)
+#take first 10 character substrings of drug names so drug names are same format as CMS data
+shortBPdrugs <- substr(BPdrugs, 0, 10)
+#remove trailing white space from drug names
+bpFinalList <- sub("\\s+$", "", shortBPdrugs)
+```
+
+**Part 3: Visualizing the Data**
+
+Create plots to visualize data
+
+```{r}
+#Plot data of all drugs by quarter
+plot(cmsdata$Quarter,cmsdata$Number.of.Prescriptions, type ="h", xlab="Quarter", ylab="Number of Prescriptions Written")
+##subset of national Medicaid data that includes only hypertension drug data
+subdata <- subset(cmsdata, cmsdata$Product.Name %in% bpFinalList, select=c(Product.Name, Quarter, State, Units.Reimbursed, Number.of.Prescriptions, Total.Amount.Reimbursed))
+
+
+plot(subdata$Quarter,subdata$Number.of.Prescriptions, type ="h", xlab="Quarter", ylab="Number of Prescriptions Written")
+
+
+```
